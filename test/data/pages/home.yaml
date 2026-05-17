@@ -6,12 +6,12 @@ date: 2023-11-01
 sections:
   - block: hero
     content:
-      title: "**Build Anything** with Hugo Blox"
+      title: "**Build Anything** with HugoBlox"
       text: |
-        Create stunning websites with our Preact-powered components.
+        Create stunning websites with Hugo-powered components.
         Fast, flexible, and future-proof.
       announcement:
-        text: "🎉 Introducing Preact Components"
+        text: "🎉 Introducing New Components"
         link:
           text: "Learn more"
           url: "/linked"
@@ -90,10 +90,53 @@ sections:
       height: lg
       style: light
 
+  - block: gallery
+    content:
+      title: "Lab tour"
+      subtitle: "A curated walkthrough — explicit items with captions and credits."
+      items:
+        - src: "media/albums/gallery/01-workspace.jpg"
+          caption: "The **main workspace** where most of our research happens"
+          credit: "Photo: [Picsum](https://picsum.photos)"
+          alt: "Open-plan workspace with laptops"
+        - src: "media/albums/gallery/05-castle.jpg"
+          title: "Annual retreat"
+          caption: "*Edinburgh, 2024* — three days of deep work and walks"
+          credit: "Photo: [Picsum](https://picsum.photos)"
+        - src: "media/albums/gallery/03-boat.jpg"
+          caption: "Field trip — coastal data collection on the `Aurora-II`"
+          credit: "Photo: [Picsum](https://picsum.photos)"
+          link: "/research/aurora-ii/"
+        - src: "media/albums/gallery/07-architecture.jpg"
+          caption: "The new wing opens [in spring](/news/new-wing/)"
+          credit: "Photo: [Picsum](https://picsum.photos)"
+    design:
+      layout: grid
+      columns: 4
+      gap: md
+      aspect_ratio: square
+      caption_position: below
+      hover_zoom: true
+      lightbox: true
+
+  - block: gallery
+    content:
+      title: "Recent expeditions"
+      subtitle: "Auto-loaded from `assets/media/albums/gallery/` — captions stay empty when not provided (Slice 1 behaviour)."
+      album: "media/albums/gallery"
+      sort: asc
+    design:
+      layout: masonry
+      columns: 3
+      gap: md
+      caption_position: overlay
+      hover_zoom: true
+      lightbox: true
+
   - block: cta-card
     content:
       title: "Ready to get started?"
-      text: "Join 250,000+ users building with Hugo Blox"
+      text: "Join 150,000+ users building with HugoBlox"
       button:
         text: "Start Building"
         url: "https://hugoblox.com"

@@ -208,6 +208,17 @@
   {{ $props = merge $props (dict "icon_svgs" $icon_svgs) }}
 {{ end }}
 
+{{/* Gallery block: resolve items list with responsive variants + LQIP placeholders */}}
+{{ if eq $block_type "gallery" }}
+  {{ $gallery := partial "functions/resolve_gallery_items.html" (dict
+    "content" $block.content
+    "Page" $page
+  ) }}
+  {{ if $gallery.items }}
+    {{ $props = merge $props (dict "items" $gallery.items) }}
+  {{ end }}
+{{ end }}
+
 {{/* Convert props to JSON for client-side rendering */}}
 {{ $propsJSON := $props | jsonify }}
 

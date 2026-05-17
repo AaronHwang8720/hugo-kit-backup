@@ -1,0 +1,165 @@
+{{/*
+  resolve_gallery_items — Resolves gallery block items into a list of fully-processed
+  image props ready for the Preact component. Handles two source modes:
+
+    1. content.items[]  — explicit per-image dicts with optional caption/alt/credit/link
+    2. content.album    — folder path relative to assets/, e.g. "media/albums/gallery"
+
+  For each resolved image, produces a dict with:
+    {src, srcset, width, height, aspect_ratio, lqip, alt, caption, credit, link, title}
+
+  Slice 1 caption resolution: frontmatter only (items[].caption). Sidecar + EXIF/IPTC
+  resolution is intentionally deferred to Slice 2 — for now, missing captions stay
+  empty in the UI, with the humanised filename surfaced as the `alt` fallback so
+  screen readers and search engines have something useful.
+
+  Inputs:
+    .content: the block's content dict (items / album / sort / limit)
+    .Page:    current page (for page-resource image lookup)
+
+  Returns: dict { items: [...] } or empty if nothing resolves.
+*/}}
+{{ $page := .Page }}
+{{ $content := .content }}
+{{ if not (reflect.IsMap $content) }}{{ $content = dict }}{{ end }}
+
+{{ $allowed_exts := slice ".jpg" ".jpeg" ".png" ".webp" ".gif" ".avif" ".svg" }}
+{{ $sort_order := lower ($content.sort | default "asc") }}
+{{ $limit := $content.limit | default 0 }}
+
+{{/* Build a unified list of {resource?, fallback_url?, meta} entries from either source mode */}}
+{{ $candidates := slice }}
+
+{{/* Source A — explicit items */}}
+{{ with $content.items }}
+  {{ range . }}
+    {{ $src := .src | default "" }}
+    {{ if $src }}
+      {{ $resolved := partial "functions/resolve_image_resource" (dict "path" $src "Page" $page) }}
+      {{ $candidates = $candidates | append (dict
+        "resource" $resolved.resource
+        "fallback_url" ($resolved.fallback_url | default "")
+        "meta" .
+      ) }}
+    {{ end }}
+  {{ end }}
+{{ end }}
+
+{{/* Source B — album folder glob */}}
+{{ with $content.album }}
+  {{ $album := strings.TrimSuffix "/" . }}
+  {{ $matches := resources.Match (printf "%s/*" $album) }}
+  {{ $sorted := sort $matches "Name" $sort_order }}
+  {{ range $sorted }}
+    {{ if in $allowed_exts (lower (path.Ext .Name)) }}
+      {{ $candidates = $candidates | append (dict
+        "resource" .
+        "fallback_url" ""
+        "meta" dict
+      ) }}
+    {{ end }}
+  {{ end }}
+{{ end }}
+
+{{/* Apply limit */}}
+{{ if gt $limit 0 }}
+  {{ $candidates = first $limit $candidates }}
+{{ end }}
+
+{{/* Process each candidate into final item props */}}
+{{ $out := slice }}
+{{ range $candidates }}
+  {{ $meta := .meta }}
+  {{ $resource := .resource }}
+  {{ $fallback_url := .fallback_url }}
+
+  {{/* Per-item text fields. Caption / title / credit are rendered through
+       Hugo's markdown pipeline at build time (inline mode — no wrapping <p>)
+       so users can put **bold**, *italic*, `code`, and [links](url) in any of
+       them without shipping a JS markdown parser. Alt stays as plain text
+       since it lives inside an HTML attribute. */}}
+  {{ $alt := index $meta "alt" | default "" }}
+  {{ $caption_raw := index $meta "caption" | default "" }}
+  {{ $title_raw := index $meta "title" | default "" }}
+  {{ $credit_raw := index $meta "credit" | default "" }}
+  {{ $link := index $meta "link" | default "" }}
+
+  {{ $caption := $caption_raw }}
+  {{ if and $caption_raw $page }}
+    {{ $caption = $page.RenderString (dict "display" "inline") $caption_raw }}
+  {{ end }}
+  {{ $title := $title_raw }}
+  {{ if and $title_raw $page }}
+    {{ $title = $page.RenderString (dict "display" "inline") $title_raw }}
+  {{ end }}
+  {{ $credit := $credit_raw }}
+  {{ if and $credit_raw $page }}
+    {{ $credit = $page.RenderString (dict "display" "inline") $credit_raw }}
+  {{ end }}
+
+  {{ $entry := dict
+    "alt" $alt
+    "caption" $caption
+    "credit" $credit
+    "link" $link
+    "title" $title
+  }}
+
+  {{ if $resource }}
+    {{ $canProcess := and (reflect.IsImageResourceProcessable $resource) (ne $resource.MediaType.SubType "gif") }}
+    {{ if $canProcess }}
+      {{ $responsive := partial "functions/process_responsive_image.html" (dict
+        "image" $resource
+        "mode" "fit"
+        "sizes" (slice 480 768 1024 1366 1920)
+      ) }}
+      {{ $entry = merge $entry (dict
+        "src" $responsive.fallback.RelPermalink
+        "srcset" $responsive.srcset
+        "width" $responsive.fallback.Width
+        "height" $responsive.fallback.Height
+        "aspect_ratio" (div (float $resource.Width) (float $resource.Height))
+      ) }}
+
+      {{/* LQIP — 20px wide WebP, inlined as base64 for instant placeholder paint */}}
+      {{ $lqip_res := $resource.Resize "20x webp q30" }}
+      {{ $lqip_b64 := $lqip_res.Content | base64Encode }}
+      {{ $entry = merge $entry (dict "lqip" (printf "data:image/webp;base64,%s" $lqip_b64)) }}
+    {{ else }}
+      {{/* SVG / GIF — pass through unprocessed */}}
+      {{ $entry = merge $entry (dict
+        "src" $resource.RelPermalink
+        "width" $resource.Width
+        "height" $resource.Height
+        "aspect_ratio" (cond (gt $resource.Height 0) (div (float $resource.Width) (float $resource.Height)) 1.0)
+      ) }}
+    {{ end }}
+
+    {{/* Alt fallback: plainified caption → humanised filename. Caption itself
+        is NOT filled from filename — empty captions stay empty in the UI
+        (Slice 1 behaviour). Plainify strips the HTML produced by RenderString
+        so alt stays attribute-safe. */}}
+    {{ if not $entry.alt }}
+      {{ $fallback_alt := "" }}
+      {{ with $caption_raw }}
+        {{ $fallback_alt = plainify (printf "%s" $entry.caption) }}
+      {{ end }}
+      {{ if not $fallback_alt }}
+        {{ $base := path.Base $resource.Name }}
+        {{ $name := strings.TrimSuffix (path.Ext $base) $base }}
+        {{ $name = replace $name "-" " " }}
+        {{ $name = replace $name "_" " " }}
+        {{ $fallback_alt = humanize $name }}
+      {{ end }}
+      {{ $entry = merge $entry (dict "alt" $fallback_alt) }}
+    {{ end }}
+  {{ else if $fallback_url }}
+    {{ $entry = merge $entry (dict "src" $fallback_url) }}
+  {{ end }}
+
+  {{ if $entry.src }}
+    {{ $out = $out | append $entry }}
+  {{ end }}
+{{ end }}
+
+{{ return dict "items" $out }}

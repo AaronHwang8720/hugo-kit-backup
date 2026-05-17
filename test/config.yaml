@@ -1,4 +1,4 @@
-title: Hugo Blox Test
+title: HugoBlox Test
 baseURL: https://example.com
 build:
   buildStats:
@@ -14,11 +14,3 @@ markup:
   _merge: deep
 security:
   _merge: deep
-params:
-  header:
-    navbar:
-      enable: false
-  extensions:
-    cms:
-      local_backend: true
-      publish_mode:
