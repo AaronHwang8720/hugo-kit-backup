@@ -13,10 +13,8 @@
 {{ $resource := (.Resources.ByType "image").GetMatch "*featured*" }}
 {{ if not (reflect.IsResource $resource) }}
   {{/* Otherwise fall back the image file specified in front matter */}}
-  {{ $filename := "" }}
-  {{ if and .Params.image (reflect.IsMap .Params.image) }}
-    {{ $filename = .Params.image.filename }}
-  {{ end }}
+  {{ $image_params := partial "functions/get_page_image_params.html" . }}
+  {{ $filename := $image_params.filename | default "" }}
   {{/* Search in page folder */}}
   {{ $resource = (.Resources.ByType "image").GetMatch $filename }}
   {{/* Otherwise in `assets/media/` folder */}}

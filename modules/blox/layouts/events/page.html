@@ -141,11 +141,7 @@
       {{ else }}
         {{/* Fallback to featured image if no slides */}}
         {{ $featured := partial "functions/get_featured_image.html" . }}
-        {{/* Safely extract image parameters - handle case where image is not a map */}}
-        {{ $image_params := dict }}
-        {{ if and .Params.image (reflect.IsMap .Params.image) }}
-          {{ $image_params = .Params.image }}
-        {{ end }}
+        {{ $image_params := partial "functions/get_page_image_params.html" . }}
         {{ if and $featured (not $image_params.preview_only) }}
         {{/* Fit image within max size. */}}
         {{ $image := $featured }}
