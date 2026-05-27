@@ -23,9 +23,29 @@ publishDate: '2017-01-01T00:00:00Z'
 # Enter a publication type from the CSL standard.
 publication_types: ['paper-conference']
 
-# Publication name and optional abbreviated publication name.
-publication: In *HugoBlox Kit Conference*
-publication_short: In *ICW*
+# Publication metadata — structured fields used by citation styles and BibTeX export.
+publication:
+  name: "Proceedings of the HugoBlox Kit Conference"
+  short_name: "ICW"
+
+peer_reviewed: true
+open_access: true
+license: CC-BY-4.0
+
+# Awards, honors, and recognitions. Surfaced as badges on the page and in listings.
+awards:
+  - name: "Best Paper Award"
+    level: winner
+    note: "Top 5 of 8000 submissions"
+  - name: "Oral Presentation"
+    level: selected
+
+# Funders and grants. Required by many funders for compliance reporting.
+funding:
+  - funder: "National Science Foundation"
+    grant: "NSF-2401234"
+  - funder: "European Research Council"
+    grant: "ERC-StG-101234"
 
 abstract: Lorem ipsum dolor sit amet, consectetur adipiscing elit. Duis posuere tellus ac convallis placerat. Proin tincidunt magna sed ex sollicitudin condimentum. Sed ac faucibus dolor, scelerisque sollicitudin nisi. Cras purus urna, suscipit quis sapien eu, pulvinar tempor diam. Quisque risus orci, mollis id ante sit amet, gravida egestas nisl. Sed ac tempus magna. Proin in dui enim. Donec condimentum, sem id dapibus fringilla, tellus enim condimentum arcu, nec volutpat est felis vel metus. Vestibulum sit amet erat at nulla eleifend gravida.
 

@@ -12,9 +12,16 @@ publishDate: "2017-01-01T00:00:00Z"
 # Enter a publication type from the CSL standard.
 publication_types: ["article"]
 
-# Publication name and optional abbreviated publication name.
-publication: ""
-publication_short: ""
+# Publication metadata — structured fields used by citation styles and BibTeX export.
+# Preprints typically have no formal venue; omit `publication` until the work is accepted.
+
+peer_reviewed: false
+open_access: true
+license: CC-BY-4.0
+
+funding:
+  - funder: "Wellcome Trust"
+    grant: "WT-219123/Z/19/Z"
 
 abstract: Lorem ipsum dolor sit amet, consectetur adipiscing elit. Duis posuere tellus ac convallis placerat. Proin tincidunt magna sed ex sollicitudin condimentum. Sed ac faucibus dolor, scelerisque sollicitudin nisi. Cras purus urna, suscipit quis sapien eu, pulvinar tempor diam. Quisque risus orci, mollis id ante sit amet, gravida egestas nisl. Sed ac tempus magna. Proin in dui enim. Donec condimentum, sem id dapibus fringilla, tellus enim condimentum arcu, nec volutpat est felis vel metus. Vestibulum sit amet erat at nulla eleifend gravida.
 

@@ -122,6 +122,6 @@ sections:
     design:
       card:
         # Card background color (CSS class)
-        css_class: 'bg-primary-300 dark:bg-primary-700'
+        css_class: 'bg-gradient-to-br from-primary-500 via-primary-600 to-secondary-600 text-white shadow-2xl'
         css_style: ''
 ---

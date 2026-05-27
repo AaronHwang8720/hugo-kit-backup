@@ -11,6 +11,11 @@
       <a href="{{$item.RelPermalink}}"><span
         class="absolute -inset-x-4 -inset-y-6 z-20 sm:-inset-x-6 sm:rounded-2xl"></span><span class="relative z-10">{{$item.Title}}</span></a>
     </h2>
+    {{ with $item.Params.awards }}
+    <div class="relative z-10 mt-2">
+      {{ partial "components/award_badge.html" (dict "award" (index . 0) "page" $item "variant" "pill") }}
+    </div>
+    {{ end }}
     <time
       class="md:hidden relative z-10 order-first mb-3 flex items-center text-sm text-zinc-400 dark:text-zinc-500 pl-1"
       datetime="{{ time.Format "2006-01-02" $displayDate }}">

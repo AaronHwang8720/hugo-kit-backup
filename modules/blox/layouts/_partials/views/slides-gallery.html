@@ -56,6 +56,11 @@
   </div>
   {{ end }}
 
+  {{/* Top award (top-right corner) */}}
+  {{ with $item.Params.awards }}
+    {{ partial "components/award_badge.html" (dict "award" (index . 0) "page" $item "variant" "card-corner") }}
+  {{ end }}
+
   {{/* Slide Preview Image - 16:9 aspect ratio */}}
   <a href="{{ $present_link }}" target="_blank" rel="noopener" class="block relative aspect-video bg-gradient-to-br from-zinc-100 to-zinc-200 dark:from-zinc-800 dark:to-zinc-900 overflow-hidden" aria-label="{{ printf "%s %s" $present_fullscreen_label ($item.Title | plainify) }}">
     {{ with $resource }}

@@ -318,6 +318,39 @@
 - id: publication_type
   translation: Type
 
+- id: awards
+  translation: Awards
+
+- id: funding
+  translation: Funding
+
+- id: license
+  translation: License
+
+- id: peer_reviewed
+  translation: Peer-reviewed
+
+- id: open_access
+  translation: Open access
+
+- id: award_level_winner
+  translation: Winner
+
+- id: award_level_runner_up
+  translation: Runner-up
+
+- id: award_level_honorable_mention
+  translation: Honorable mention
+
+- id: award_level_nominee
+  translation: Nominee
+
+- id: award_level_selected
+  translation: Selected
+
+- id: award_level_featured
+  translation: Featured
+
 - id: date
   translation: Date
 

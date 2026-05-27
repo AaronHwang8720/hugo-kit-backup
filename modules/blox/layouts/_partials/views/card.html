@@ -25,12 +25,19 @@
 <div class="group bg-white/90 dark:bg-zinc-900/90 backdrop-blur-sm rounded-2xl ring-1 ring-zinc-900/5 dark:ring-white/10 shadow-lg overflow-hidden transition-all duration-300 ease-out hover:shadow-xl hover:shadow-primary-500/10 hover:-translate-y-2 focus-within:ring-2 focus-within:ring-primary-500/50" role="article" aria-labelledby="card-title-{{ $item.File.UniqueID }}">
     <!-- Image Section -->
     <div class="relative overflow-hidden aspect-[16/9] bg-gradient-to-br from-zinc-100 to-zinc-200 dark:from-zinc-800 dark:to-zinc-900">
-      {{ with $item.Params.content_meta }}
-        {{ if .trending }}
-          <div class="absolute top-3 right-3 z-10 inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[11px] font-semibold bg-black/55 backdrop-blur-sm text-white shadow-sm">
-            <span>{{ i18n "trending" | default "Trending" }}</span>
-            <span aria-hidden="true">🔥</span>
-          </div>
+      {{/* Award badge takes priority over trending — awards are higher-signal */}}
+      {{ $top_award := "" }}
+      {{ with $item.Params.awards }}{{ $top_award = index . 0 }}{{ end }}
+      {{ with $top_award }}
+        {{ partial "components/award_badge.html" (dict "award" . "page" $item "variant" "card-corner") }}
+      {{ else }}
+        {{ with $item.Params.content_meta }}
+          {{ if .trending }}
+            <div class="absolute top-3 right-3 z-10 inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[11px] font-semibold bg-black/55 backdrop-blur-sm text-white shadow-sm">
+              <span>{{ i18n "trending" | default "Trending" }}</span>
+              <span aria-hidden="true">🔥</span>
+            </div>
+          {{ end }}
         {{ end }}
       {{ end }}
       {{ with $resource }}
